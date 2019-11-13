@@ -11,7 +11,6 @@
             html * {
                 padding: 0;
                 margin: 0;
-                background-color: #323234;
                 font-size: 16px;
                 overflow-x: hidden;
             }
@@ -29,10 +28,12 @@
                 background-color: #323234;
                 display: flex;
                 flex-wrap: nowrap;
-                /*animation-name: scroll;*/
+                animation-name: scroll;
                 animation-duration: 15s;
                 animation-iteration-count: infinite;
                 animation-timing-function: linear;
+                animation-delay: 2s;
+                transform: translateX(100vw);
             }
 
             .Ticker {
@@ -69,33 +70,62 @@
     <body>
 
         <div class="Tape">
-            <div class="Ticker is-positive">
-                <p class="Ticker-name">WEGE3</p>
-                <p>
-                    <span class="Ticker-price">R$29.59</span>
-                    <span class="Ticker-change">+1.03</span>
-                </p>
-            </div>
-
-            <div class="Ticker is-neutral">
-                <p class="Ticker-name">ITSA4</p>
-                <p>
-                    <span class="Ticker-price">R$13.04</span>
-                    <span class="Ticker-change">-0.53</span>
-                </p>
-            </div>
-
-            <div class="Ticker is-negative">
-                <p class="Ticker-name">EGIE3</p>
-                <p>
-                    <span class="Ticker-price">R$44.52</span>
-                    <span class="Ticker-change">-2.31</span>
-                </p>
-            </div>
+            <!-- Tickers will be injected here -->
         </div>
 
         <script type="text/javascript">
-            
+            function injectIntoTemplate(template, data) {
+                let component = template;
+                for (key of Object.keys(data)) {
+                    component = component.replace(`{#${key}#}`, data[key])
+                }
+
+                return component;
+            }
+
+            function addToTape(tape, tickerComponent) {
+                tape.insertAdjacentHTML('beforeend', tickerComponent)
+            }
+
+            const tape = document.querySelector(".Tape");
+
+
+            const tickerTemplate = `
+                <div class="Ticker {#MODIFIER#}">
+                    <p class="Ticker-name">{#TICKER_NAME#}</p>
+                    <p>
+                        <span class="Ticker-price">{#TICKER_PRICE#}</span>
+                        <span class="Ticker-change">{#TICKER_CHANGE#}</span>
+                    </p>
+                </div>
+                `
+
+            const stocks = [
+                {
+                    TICKER_NAME: 'WEGE3',
+                    TICKER_PRICE: 29.59,
+                    TICKER_CHANGE: 1.03,
+                    MODIFIER: 'is-positive'
+                },
+
+                {
+                    TICKER_NAME: 'ITSA4',
+                    TICKER_PRICE: 13.04,
+                    TICKER_CHANGE: 0,
+                    MODIFIER: 'is-neutral'
+                },
+                {
+                    TICKER_NAME: 'EGIE3',
+                    TICKER_PRICE: 44.52,
+                    TICKER_CHANGE: -2.31,
+                    MODIFIER: 'is-negative'
+                }
+            ]
+
+            for (stock of stocks) {
+                const ticker = injectIntoTemplate(tickerTemplate, stock)
+                addToTape(tape, ticker)
+            }
         </script>
     </body>
 </html>
